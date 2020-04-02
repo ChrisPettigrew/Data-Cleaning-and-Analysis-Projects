@@ -1,0 +1,88 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(readr)
+library(janitor)
+library(stringr)
+library(here)
+```
+
+#read data
+```{r}
+raw_data <- read_rds("raw_data/decathlon.rds")
+```
+
+# 1.1.1 - Cleaning
+```{r}
+cleaned_data <- rownames_to_column(raw_data, var = "athlete") 
+
+names(cleaned_data) <- c("athlete", "run_100m", "long_jump", "shot_put", "high_jump", "run_400m", "hurdles_110m", "discus", "pole_vault", "javeline", "run_1500m", "rank", "points", "competition")
+
+cleaned_data
+```
+
+```{r}
+decathlon_data <- cleaned_data %>%
+  mutate(athlete = str_to_lower(athlete)) %>%
+  pivot_longer(cols = c(run_100m:run_1500m),
+  names_to = "event",
+  values_to = "result")
+decathlon_data
+```
+
+#1 Who had the longest long jump seen in the data?
+```{r}
+decathlon_data %>%
+  filter(event == "long_jump") %>%
+  arrange(desc(result))
+```
+
+
+#2 What was the average 100m time in each competition?
+```{r}
+decathlon_data %>%
+  filter(event == "run_100m") %>%
+  group_by(competition) %>%
+  summarise(mean(result)) 
+```
+
+
+
+
+# Who had the highest total points across both competitions?
+```{r}
+decathlon_data %>%
+  group_by(competition) %>%
+  summarise(max(points)) 
+```
+
+
+
+# What was the shot-put scores for the top three competitors in each competition?
+```{r}
+decathlon_data %>%
+  filter(event == "shot_put") %>%
+  arrange(desc(result)) %>%
+  group_by(competition) %>%
+  top_n(3)
+  
+```
+
+
+# What was the average points for competitors who ran the 400m in less than 50 seconds vs. those than ran 400m in more than 50 seconds?
+```{r}
+
+```
+
+
+
+
+
+
+
+
+

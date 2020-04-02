@@ -1,0 +1,23 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(readxl)
+library(janitor)
+```
+
+```{r}
+cbirds_ship <- read_xls("raw_data/seabirds.xls", 1) %>%
+  clean_names()
+cbirds_bird <- read_xls("raw_data/seabirds.xls", 2) %>%
+  clean_names()
+
+cbirds_bird
+cbirds_ship
+```
+
+
