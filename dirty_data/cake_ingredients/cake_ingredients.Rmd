@@ -1,0 +1,77 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+```{r}
+cakes <- read_csv("raw_data/cake-ingredients-1961.csv")
+codes <- read_csv("raw_data/cake_ingredient_code.csv")
+```
+
+```{r}
+cakes <-
+  cakes %>%
+  pivot_longer(-Cake, names_to = "code", values_to = "amount") %>%
+    left_join(codes) %>%
+    drop_na(amount) %>%
+    select(-code) %>%
+    clean_names()
+    
+cakes
+```
+
+Which cake has the most cocoa in it?
+```{r}
+cocoa_max <- cakes %>% filter(ingredient == "Cocoa") %>%
+  arrange(desc(amount)) %>%
+  head(1)
+cocoa_max
+
+```
+
+For sponge cake, how many cups of ingredients are used in total?
+```{r}
+sponge_cups <- cakes %>% filter(cake == "Sponge") %>%
+                          filter(measure == "cup") %>%
+                          summarise(sponge_cups = sum(amount))
+
+```
+
+
+How many ingredients are measured in teaspoons?
+```{r}
+teaspoons <- cakes %>% filter(measure == "teaspoon") %>%
+            nrow()
+teaspoons
+```
+
+Which cake has the most unique ingredients?
+```{r}
+
+n_ingerients <- cakes %>%
+  group_by(cake) %>%
+  count(n_distinct(ingredient)) %>%
+  arrange(desc(n)) %>%
+  head(1)
+
+n_ingerients
+```
+
+Which ingredients are used only once?
+```{r}
+
+
+solo_ingredients <- cakes %>%
+  group_by(ingredient) %>%
+  summarise(n = n()) %>%
+  filter(n == 1)
+
+solo_ingredients
+
+```
